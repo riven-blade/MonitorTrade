@@ -1,0 +1,29 @@
+/* SummaryCard.css */
+.summary-card {
+  flex: 1;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.summary-card h3 {
+  color: #2c3e50;
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.summary-card p {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.summary-card p.long {
+  color: #28a745;
+}
+
+.summary-card p.short {
+  color: #dc3545;
+}

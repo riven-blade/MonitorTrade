@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  monitor-trade:
+    image: ddhdocker/monitor-trade:latest
+    environment:
+      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
+      - TELEGRAM_ID=${TELEGRAM_ID}
+      - REDIS_ADDR=redis:6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - REDIS_DB=${REDIS_DB:-0}
+      - KEY_EXPIRE=${KEY_EXPIRE:-2592000}
+      - BOT_BASE_URL=${BOT_BASE_URL:-http://freqtrade:8080}
+      - BOT_USER_NAME=${BOT_USER_NAME}
+      - BOT_PASSWD=${BOT_PASSWD}
+      - FUNDING_RATE=${FUNDING_RATE:--0.1}
+    depends_on:
+      - redis
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    networks:
+      - monitor-trade-network
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes ${REDIS_PASSWORD:+--requirepass $REDIS_PASSWORD}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - monitor-trade-network
+
+  webapp:
+    build:
+      context: ./public/web-app
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - monitor-trade
+    restart: unless-stopped
+    networks:
+      - monitor-trade-network
+
+volumes:
+  redis_data:
+    driver: local
+
+networks:
+  monitor-trade-network:
+    driver: bridge
