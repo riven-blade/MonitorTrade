@@ -279,8 +279,8 @@ npm start
 
 ## 📞 联系方式
 
-- 项目主页: [https://github.com/riven-blade/monitor-trade](https://github.com/riven-blade/monitor-trade)
-- 问题反馈: [Issues](https://github.com/riven-blade/monitor-trade/issues)
+- 项目主页: [https://github.com/riven-blade/MonitorTrade](https://github.com/riven-blade/MonitorTrade)
+- 问题反馈: [Issues](https://github.com/riven-blade/MonitorTrade/issues)
 
 ---
 
