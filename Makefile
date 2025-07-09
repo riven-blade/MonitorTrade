@@ -1,6 +1,6 @@
 # 项目基础配置
 APP_NAME := monitor-trade
-VERSION  := v1.0.148
+VERSION  := v1.0.152
 DOCKER_REPO := ddhdocker/$(APP_NAME)
 FRONTEND_REPO := ddhdocker/$(APP_NAME)-frontend
 

@@ -72,7 +72,7 @@ func (c *MainController) HandleShort(pairData *model.PairData) {
 			Pair:      pairData.Pair,
 			Price:     pairData.AskPrice,
 			Side:      "short",
-			EntryTag:  "force_buy",
+			EntryTag:  "force_entry",
 			OrderType: "limit",
 		}
 	}
@@ -95,7 +95,7 @@ func (c *MainController) HandleLong(pairData *model.PairData) {
 			Pair:      pairData.Pair,
 			Price:     pairData.BidPrice,
 			Side:      "long",
-			EntryTag:  "force_buy",
+			EntryTag:  "force_entry",
 			OrderType: "limit",
 		}
 	}
