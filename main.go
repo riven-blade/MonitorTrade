@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"monitor-trade/config"
 	"monitor-trade/controller"
@@ -9,9 +10,13 @@ import (
 	"monitor-trade/controller/http"
 	"monitor-trade/controller/redis"
 	"monitor-trade/controller/tg"
+	"monitor-trade/model"
 )
 
 func main() {
+	// 创建主context用于优雅停止
+	ctx := context.Background()
+
 	conf := config.LoadFromEnv()
 	redisController := redis.NewRedisController(conf)
 
@@ -36,15 +41,17 @@ func main() {
 
 	// Tg 消息通知通道
 	messageChan := make(chan string, 1000)
+	tradeChan := make(chan model.ForceBuyPayload, 1000)
 	freqtradeController := freqtrade.NewFreqtradeController(conf.BotBaseUrl, conf.BotUsername, conf.BotPasswd, redisController)
 	freqtradeController.Init(messageChan)
+	go freqtradeController.HandleTradeChan(ctx, tradeChan)
 
 	// 使用Binance作为价格数据源的TgController
-	tgController := tg.NewTgController(conf.TelegramToken, conf.TelegramId, redisController, freqtradeController)
+	tgController := tg.NewTgController(conf.TelegramToken, conf.TelegramId, redisController, freqtradeController, conf)
 	go tgController.SendMessageByChan(messageChan)
 	go tgController.HandleCommand()
 
-	mainController := controller.NewMainController(tgController, redisController, conf, freqtradeController, binanceController)
+	mainController := controller.NewMainController(tgController, redisController, conf, binanceController, tradeChan)
 	// 使用Binance WebSocket监听价格变化
 	go binanceController.Watch(mainController.WatchKey)
 	go mainController.Start()

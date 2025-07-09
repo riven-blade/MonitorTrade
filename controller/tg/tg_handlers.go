@@ -65,7 +65,7 @@ func (tg *TgController) handleLongCommand(pair string, price float64) string {
 		data.Price = price
 		resultMsg = fmt.Sprintf("🟢 %s 做多监听，限价: %.6f", pair, data.Price)
 	}
-	if err := tg.RedisController.SetPairDataToRedis(data, LongDirect); err != nil {
+	if err := tg.RedisController.SetMonitorPair(data, LongDirect); err != nil {
 		resultMsg = fmt.Sprintf("设置 %s 做多监听失败: %v", pair, err)
 	} else {
 		resultMsg += fmt.Sprintf(", 当前价格: %.6f", currentPrice)
@@ -263,14 +263,14 @@ func (tg *TgController) handleADCommand(pair string, stakeAmount float64, price 
 	}
 
 	if isShort {
-		err := tg.FreqtradeController.ForceAdjustBuy(pair, price, ShortDirect, stakeAmount)
+		err := tg.FreqtradeController.ForceAdjustBuy(pair, price, ShortDirect, stakeAmount, tg.Conf.BotAdjustEntryTag)
 		if err != nil {
 			log.Printf("%s 做空加仓失败: %v", pair, err)
 			return fmt.Sprintf("❌ %s 做空加仓失败: %v", pair, err)
 		}
 		return fmt.Sprintf("📉 %s 做空加仓成功，金额: %.2f，价格: %.6f", pair, stakeAmount, price)
 	} else {
-		err := tg.FreqtradeController.ForceAdjustBuy(pair, price, LongDirect, stakeAmount)
+		err := tg.FreqtradeController.ForceAdjustBuy(pair, price, LongDirect, stakeAmount, tg.Conf.BotAdjustEntryTag)
 		if err != nil {
 			log.Printf("%s 做多加仓失败: %v", pair, err)
 			return fmt.Sprintf("❌ %s 做多加仓失败: %v", pair, err)

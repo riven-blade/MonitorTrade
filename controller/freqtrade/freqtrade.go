@@ -32,10 +32,26 @@ func NewFreqtradeController(baseUrl, username, password string, redisController 
 		BaseUrl:         baseUrl,
 		Username:        username,
 		Password:        password,
-		stopChan:        make(chan struct{}),
 		redisController: redisController,
 		httpClient:      &http.Client{Timeout: 10 * time.Second},
 	}
+}
+
+// Stop 优雅停止所有定时器
+func (fc *FreqtradeController) Stop() {
+	log.Println("正在停止Freqtrade控制器...")
+
+	if fc.stopChan != nil {
+		close(fc.stopChan)
+		fc.stopChan = nil
+	}
+
+	if fc.stopChanPair != nil {
+		close(fc.stopChanPair)
+		fc.stopChanPair = nil
+	}
+
+	log.Println("Freqtrade控制器已停止")
 }
 
 func (fc *FreqtradeController) startTokenRefresher() {
@@ -178,15 +194,8 @@ func (fc *FreqtradeController) refreshToken() {
 	log.Println("刷新 token 成功")
 }
 
-func (fc *FreqtradeController) ForceBuy(pair string, price float64, side string) error {
+func (fc *FreqtradeController) ForceBuy(payload model.ForceBuyPayload) error {
 	url := fmt.Sprintf("%s/api/v1/forcebuy", fc.BaseUrl)
-	payload := model.ForceBuyPayload{
-		Pair:      pair,
-		Price:     price,
-		OrderType: "limit",
-		Side:      side,
-		EntryTag:  "force_entry",
-	}
 
 	body, err := json.Marshal(payload)
 	if err != nil {
@@ -202,14 +211,14 @@ func (fc *FreqtradeController) ForceBuy(pair string, price float64, side string)
 	return nil
 }
 
-func (fc *FreqtradeController) ForceAdjustBuy(pair string, price float64, side string, stakeAmount float64) error {
+func (fc *FreqtradeController) ForceAdjustBuy(pair string, price float64, side string, stakeAmount float64, entryTag string) error {
 	url := fmt.Sprintf("%s/api/v1/forcebuy", fc.BaseUrl)
 	payload := model.ForceAdjustBuyPayload{
 		Pair:        pair,
 		Price:       price,
 		OrderType:   "limit",
 		Side:        side,
-		EntryTag:    "force_entry",
+		EntryTag:    entryTag,
 		StakeAmount: stakeAmount,
 	}
 

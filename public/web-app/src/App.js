@@ -22,8 +22,8 @@ function App() {
     // 检查 URL 查询参数中是否包含正确的访问密钥
     const params = new URLSearchParams(window.location.search);
     const accessKey = params.get('access_key');
-    // 在这里设置您的秘密访问密钥
-    const secretKey = 'V8XoMgzeGY8we47AUlDYMxsvOwDy7SMemWVZV0zSmOWyO6CJmYM9EvlUS4LQpJZk'; // 建议使用更复杂的字符串
+    // 从环境变量获取访问密钥，避免硬编码
+    const secretKey = process.env.REACT_APP_ACCESS_KEY || 'default_secret_key';
 
     if (accessKey === secretKey) {
       setAuthorized(true);

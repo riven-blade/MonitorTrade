@@ -6,13 +6,14 @@ import (
 )
 
 type Config struct {
-	Redis         RedisConfig `json:"redis"`          // Redis configuration
-	TelegramToken string      `json:"telegram_token"` // Telegram configuration
-	TelegramId    int64       `json:"telegram_id"`    // Telegram configuration
-	FundingRate   float64     `json:"funding_rate"`   // Funding rate threshold
-	BotBaseUrl    string      `json:"freqtrade_base_url"`
-	BotUsername   string      `json:"bot_username"`
-	BotPasswd     string      `json:"bot_passwd"`
+	Redis             RedisConfig `json:"redis"`          // Redis configuration
+	TelegramToken     string      `json:"telegram_token"` // Telegram configuration
+	TelegramId        int64       `json:"telegram_id"`    // Telegram configuration
+	FundingRate       float64     `json:"funding_rate"`   // Funding rate threshold
+	BotBaseUrl        string      `json:"freqtrade_base_url"`
+	BotUsername       string      `json:"bot_username"`
+	BotPasswd         string      `json:"bot_passwd"`
+	BotAdjustEntryTag string      `json:"bot_adjust_entry_tag"`
 }
 
 type RedisConfig struct {
@@ -69,12 +70,13 @@ func LoadFromEnv() *Config {
 			DB:        getEnvInt("REDIS_DB", 0),
 			KeyExpire: getEnvInt("KEY_EXPIRE", 2592000),
 		},
-		TelegramToken: getEnvString("TELEGRAM_TOKEN", ""),
-		TelegramId:    int64(getEnvInt("TELEGRAM_ID", 0)),
-		FundingRate:   getEnvFloat64("FUNDING_RATE", -0.1),
-		BotBaseUrl:    getEnvString("BOT_BASE_URL", "http://127.0.0.1:8080"),
-		BotUsername:   getEnvString("BOT_USER_NAME", ""),
-		BotPasswd:     getEnvString("BOT_PASSWD", ""),
+		TelegramToken:     getEnvString("TELEGRAM_TOKEN", ""),
+		TelegramId:        int64(getEnvInt("TELEGRAM_ID", 0)),
+		FundingRate:       getEnvFloat64("FUNDING_RATE", -0.1),
+		BotBaseUrl:        getEnvString("BOT_BASE_URL", "http://127.0.0.1:8080"),
+		BotUsername:       getEnvString("BOT_USER_NAME", ""),
+		BotPasswd:         getEnvString("BOT_PASSWD", ""),
+		BotAdjustEntryTag: getEnvString("BOT_ADJUST_ENTRY_TAG", "grind_3_entry"),
 	}
 	return config
 }

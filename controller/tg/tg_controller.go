@@ -2,6 +2,7 @@ package tg
 
 import (
 	"log"
+	"monitor-trade/config"
 	"monitor-trade/controller/freqtrade"
 	"monitor-trade/controller/redis"
 
@@ -19,9 +20,10 @@ type TgController struct {
 	Bot                 *tgbotapi.BotAPI
 	RedisController     *redis.RedisController
 	FreqtradeController *freqtrade.FreqtradeController
+	Conf                *config.Config
 }
 
-func NewTgController(botToken string, tgId int64, controller *redis.RedisController, freqtradeController *freqtrade.FreqtradeController) *TgController {
+func NewTgController(botToken string, tgId int64, controller *redis.RedisController, freqtradeController *freqtrade.FreqtradeController, conf *config.Config) *TgController {
 	// 初始化 Telegram 机器人
 	bot, err := tgbotapi.NewBotAPI(botToken)
 	if err != nil {
@@ -35,5 +37,6 @@ func NewTgController(botToken string, tgId int64, controller *redis.RedisControl
 		Bot:                 bot,
 		RedisController:     controller,
 		FreqtradeController: freqtradeController,
+		Conf:                conf,
 	}
 }
