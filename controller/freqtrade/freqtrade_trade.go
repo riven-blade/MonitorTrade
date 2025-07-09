@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"monitor-trade/model"
-	"time"
 )
 
 // HandleTradeChan 处理交易通道，支持优雅停止
@@ -20,7 +19,6 @@ func (fc *FreqtradeController) HandleTradeChan(ctx context.Context, tradeChan ch
 			return
 		case trade := <-tradeChan:
 			fc.processTrade(trade)
-			time.Sleep(5 * time.Second)
 		}
 	}
 }
@@ -28,6 +26,14 @@ func (fc *FreqtradeController) HandleTradeChan(ctx context.Context, tradeChan ch
 // processTrade 处理单个交易请求
 func (fc *FreqtradeController) processTrade(trade model.ForceBuyPayload) {
 	log.Printf("收到%s交易请求: %s, 价格: %.6f", trade.Side, trade.Pair, trade.Price)
+
+	// 尝试获取Redis分布式锁
+	if !fc.redisController.AcquireTradeLock(trade.Pair) {
+		log.Printf("⏰ %s 交易锁获取失败，可能有其他交易正在进行，跳过执行", trade.Pair)
+		return
+	}
+
+	log.Printf("🔒 获取 %s 交易锁成功，开始处理交易", trade.Pair)
 
 	// 校验仓位限制
 	if !fc.CheckForceBuy(trade.Pair) {

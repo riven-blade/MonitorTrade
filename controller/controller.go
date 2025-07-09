@@ -69,10 +69,11 @@ func (c *MainController) HandleShort(pairData *model.PairData) {
 			pairData.Timestamp, pairData.Pair, pairData.AskPrice, shortData.Price, fundingRate)
 
 		c.TradeChan <- model.ForceBuyPayload{
-			Pair:     pairData.Pair,
-			Price:    pairData.AskPrice,
-			Side:     "short",
-			EntryTag: "force_buy",
+			Pair:      pairData.Pair,
+			Price:     pairData.AskPrice,
+			Side:      "short",
+			EntryTag:  "force_buy",
+			OrderType: "limit",
 		}
 	}
 }
@@ -91,10 +92,11 @@ func (c *MainController) HandleLong(pairData *model.PairData) {
 			pairData.Timestamp, pairData.Pair, pairData.BidPrice, longData.Price)
 
 		c.TradeChan <- model.ForceBuyPayload{
-			Pair:     pairData.Pair,
-			Price:    pairData.BidPrice,
-			Side:     "long",
-			EntryTag: "force_buy",
+			Pair:      pairData.Pair,
+			Price:     pairData.BidPrice,
+			Side:      "long",
+			EntryTag:  "force_buy",
+			OrderType: "limit",
 		}
 	}
 }

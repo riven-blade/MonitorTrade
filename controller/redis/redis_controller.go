@@ -1,14 +1,17 @@
 package redis
 
 import (
+	"context"
 	"monitor-trade/config"
 	"monitor-trade/model"
 	"sync"
+	"time"
 
 	"github.com/go-redis/redis/v8"
 )
 
 const MonitorKey = "monitor"
+const TradeKey = "trade" // Redis锁的前缀
 
 type RedisController struct {
 	Client            *redis.Client
@@ -37,4 +40,25 @@ func NewRedisController(conf *config.Config) *RedisController {
 		mutexPairPrices:   sync.RWMutex{},
 		mutexMonitorPairs: sync.RWMutex{},
 	}
+}
+
+// AcquireTradeLock 获取交易锁
+func (r *RedisController) AcquireTradeLock(pair string) bool {
+	ctx := context.Background()
+	key := TradeKey + ":" + pair
+
+	// 尝试设置锁，TTL为120秒
+	result, err := r.Client.SetNX(ctx, key, "locked", 120*time.Second).Result()
+	if err != nil {
+		return false
+	}
+
+	return result
+}
+
+// ReleaseTradeLock 释放交易锁
+func (r *RedisController) ReleaseTradeLock(pair string) {
+	ctx := context.Background()
+	key := TradeKey + ":" + pair
+	r.Client.Del(ctx, key)
 }
