@@ -124,8 +124,8 @@ func (r *RedisController) SetPairDataToRedis(data model.PairMonitorData, direct 
 		return err
 	}
 
-	// 生成随机过期时间：r.conf.Redis.KeyExpire/2 到 r.conf.Redis.KeyExpire 之间
-	minExpire := r.conf.Redis.KeyExpire / 2
+	// 生成随机过期时间：r.conf.Redis.KeyExpire/3 到 r.conf.Redis.KeyExpire 之间
+	minExpire := r.conf.Redis.KeyExpire / 3
 	maxExpire := r.conf.Redis.KeyExpire
 	randomExpire := minExpire + rand.Intn(maxExpire-minExpire+1)
 
